@@ -1,9 +1,10 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import axios from "axios";
 
-export default function Register() {
+export default function Register({ setIsAuth }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,10 +33,14 @@ export default function Register() {
         "http://localhost:5000/api/users",
         body
       );
-
       console.log(response.data);
-      //   console.log(response.headers);
+      // console.log(response.headers["auth-token"]);
 
+      localStorage.setItem("auth-token", response.headers["auth-token"]);
+      setIsAuth(true);
+      toast.success("Registered successfully");
+
+      // * api call with fetch
       //   const response = await fetch("http://localhost:5000/api/users", {
       //     method: "POST",
       //     headers: { "Content-Type": "application/json" },
@@ -43,7 +48,10 @@ export default function Register() {
       //   });
 
       //   console.log(await response.json());
-    } catch (error) {}
+    } catch (error) {
+      console.log(error.response.data);
+      toast.error(error.response.data);
+    }
   };
 
   return (
@@ -73,6 +81,7 @@ export default function Register() {
         />
         <Button>Register</Button>
       </Form>
+      <Link to="/login">Already have an account? Login</Link>
     </Container>
   );
 }
@@ -101,7 +110,7 @@ const Input = styled.input`
 const Button = styled.button`
   width: 50%;
   margin: 10px;
-  background-color: #00bfa6;
+  background-color: #00b0ff;
   border: 0;
   border-radius: 5px;
   color: white;
